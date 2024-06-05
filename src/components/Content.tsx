@@ -204,10 +204,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = () => {
               {t("LauncherBtn")}
             </ButtonItem>
           </PanelSectionRow>
-        </PanelSection>
-      ) : (
-        ""
-      )}
+        </PanelSection>) : ("")}
       <PanelSection title={t("ControlsTitle")}>
         <PanelSectionRow>
           <ButtonItem

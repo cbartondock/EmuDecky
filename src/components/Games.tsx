@@ -1,6 +1,6 @@
 import { VFC, useState, useEffect } from "react";
 import { Tabs, Button, Focusable, SteamSpinner } from "decky-frontend-lib";
-import { launchApp } from "../common/steamshortcuts";
+import { launchApp, getCurrentUserId } from "../common/steamshortcuts";
 import { getTranslateFunc } from "../TranslationsF";
 const Games: VFC<{ serverAPI: any }> = ({ serverAPI }) => {
   const [state, setState] = useState<any>({ games: undefined, tabs: undefined });
@@ -9,8 +9,8 @@ const Games: VFC<{ serverAPI: any }> = ({ serverAPI }) => {
   const t = getTranslateFunc();
 
   const getDataGames = async () => {
-    serverAPI.callPluginMethod("emudeck_dirty", { command: `generateGameListsJson` }).then((response: any) => {
-      //serverAPI.callPluginMethod("generate_game_lists").then((response: any) => {
+    await serverAPI.callPluginMethod("emudeck", { command: `userId=${getCurrentUserId()}; generateGameLists` });
+    serverAPI.callPluginMethod("emudeck_dirty", { command: `userId=${getCurrentUserId()}; generateGameListsJson` }).then((response: any) => {
       const result: any = response.result;
       console.log({ result });
       const gameList: any = JSON.parse(result);
