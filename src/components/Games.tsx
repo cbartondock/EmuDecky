@@ -9,8 +9,15 @@ const Games: VFC<{ serverAPI: any }> = ({ serverAPI }) => {
   const t = getTranslateFunc();
 
   const getDataGames = async () => {
-    await serverAPI.callPluginMethod("emudeck", { command: `userId=${getCurrentUserId()}; generateGameLists` });
-    serverAPI.callPluginMethod("emudeck_dirty", { command: `userId=${getCurrentUserId()}; generateGameListsJson` }).then((response: any) => {
+    const userId = getCurrentUserId()
+    await serverAPI.callPluginMethod("emudeck", {
+      command: `generateGameLists`
+    });
+    serverAPI.callPluginMethod("emudeck", {
+      command: `generateGameListsJson`,
+      strip: false,
+      args: [userId]
+    }).then((response: any) => {
       const result: any = response.result;
       console.log({ result });
       const gameList: any = JSON.parse(result);

@@ -5,21 +5,28 @@ import json
 from glob import glob
 import decky_plugin
 
+def log(txt):
+  decky_plugin.logger.info(txt)
+
+def warn(txt):
+  decky_plugin.logger.warn(txt)
+
+def error(txt):
+  decky_plugin.logger.error(txt)
+
 
 # Directorio de configuración del plugin
 confdir = os.environ["DECKY_PLUGIN_SETTINGS_DIR"]
 
 class Plugin:
-    async def emudeck(self, command):
+    async def emudeck(self, command, strip=True, args=[]):
+        log("args: " + ", ".join(args))
         bash_command = ". $HOME/.config/EmuDeck/backend/functions/all.sh && " + command
+        if len(args) > 0:
+            bash_command += " " + " ".join(["\""+arg+"\"" for arg in args])
+        log(bash_command)
         result = subprocess.run(bash_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        cleaned_stdout = result.stdout.strip()
-        return cleaned_stdout
-
-    async def emudeck_dirty(self, command):
-        bash_command = ". $HOME/.config/EmuDeck/backend/functions/all.sh && " + command
-        result = subprocess.run(bash_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        return result.stdout
+        return result.stdout.strip() if strip else result.stdout
 
     # START QL
     async def get_id(self):
@@ -58,6 +65,7 @@ class Plugin:
         return json_configuration
 
     async def _main(self):
+        #bash_command = "cd $HOME/.config/EmuDeck/backend/ && . $HOME/.config/EmuDeck/backend/functions/all.sh && generateGameLists"
         bash_command = "cd $HOME/.config/EmuDeck/backend/ && git reset --hard && git pull && . $HOME/.config/EmuDeck/backend/functions/all.sh && generateGameLists"
 
         result = subprocess.run(bash_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
